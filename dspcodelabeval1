@@ -1,0 +1,326 @@
+N POINT DFT WITHOUT FUNCTION
+clc;
+clear all;
+x = input('Enter input seq:');
+N =length(x);
+y=zeros(1,N);
+for k=1:1:N
+    for n=1:1:N
+        y(k)= y(k) + x(n).exp(-j.*2*pi(k-1).*(n-1)/N);
+    end
+end
+subplot(2,2,1)
+stem(y)
+
+y1= fft(x)
+subplot(2,2,2)
+stem(y1)
+
+m=y
+z=zeros(1,N)
+for a=0:1:N-1
+    for b=0:1:N-1 
+        z(a+1)= z(a+1) + (1/N)(y(b+1).*exp(j.*2*pi(a).*(b)/N));
+    end
+end
+
+subplot(2,2,3)
+stem(z)
+      % Input sequence
+X = [1, 2, 3, 4];
+
+% Number of samples
+N = length(X);
+
+% Initialize the IDFT result vector
+x_n = zeros(1, N);
+
+% Compute IDFT
+for n = 1:N
+    for k = 1:N
+        x_n(n) = x_n(n) + X(k) * exp(1i * 2 * pi * (k - 1) * (n - 1) / N);
+    end
+    x_n(n) = x_n(n) / N;
+end
+
+% Display the IDFT result
+disp('IDFT Result:');
+disp(x_n);
+
+
+
+CIRCULAR CONVOLUTION WITHOUT USING FUNCTION
+  clc
+clear all
+x = input('enter a sequence:');
+h = input('enter another sequence:');
+n1=length(x);
+n2 = length(h);
+n = max(n1,n2);
+t=1:n;
+x = [x,zeros(1,n-n1)];
+h = [h,zeros(1,n-n2)];
+y = zeros(1,n);
+for i =0:n-1
+    for j = 0:n-1
+        k = mod((i-j),n);
+        y(i+1) = y(i+1) + x(j+1)*h(k+1);
+    end
+end
+figure 
+stem(t,y)
+grid on
+legend('102106069')
+xlabel('N-->')
+ylabel('Amplitude')
+title('Circular convolution')
+
+LINEAR CONVOLUTION USING CIRCULAR CONVOLUTION
+% compute linear conv using circular conv
+clc
+clear all;
+
+x1 = input('Enter Sequence first : ')
+x2 = input('Enter Sequence second : ')
+
+N = length(x1) + length(x2) - 1
+
+x1 = [x1, zeros(1, N - length(x1))]
+x2 = [x2, zeros(1, N - length(x2))]
+Y = zeros(1,N)
+
+for i=1:N
+    for j=1:N
+        k = i-j+1;
+        if k<=0
+            k = N+k;
+        end
+        Y(i) = Y(i) + x1(j)*x2(k);
+    end
+end
+Y
+subplot(3,1,3)
+stem(Y)
+title('Circular Conv of x1[n], x2[n]')
+xlabel('n --> ')
+ylabel('x --> ')
+
+subplot(3,1,1)
+stem(x1)
+title('Sequence x2[n]')
+xlabel('n --> ')
+ylabel('x --> ')
+
+subplot(3,1,2)
+stem(x2)
+title('Sequence x2[n]')
+xlabel('n --> ')
+ylabel('x --> ')
+
+CIRCULAR CONVOLUTION USING LINEAR CONVOLUTION
+%circular conv using linear conv
+clc
+clear all;
+
+x1 = [1 0 2 1 1]
+x2 = [5 1 9 1]
+
+n = length(x1) + length(x2) - 1
+N = max(length(x1),length(x2))
+% 5     1    19     8    24
+X1 = [x1, zeros(1, n - length(x1))]
+X2 = [x2, zeros(1, n - length(x2))]
+
+
+Y = zeros(1,n)
+
+for i=1:n
+    for j=1:i
+        Y(i) = Y(i) + X1(j)*X2(i-j+1)
+    end
+end
+Y
+Z = zeros(1,N)
+
+for i = 1:n
+    if i<=N
+        Z(i) = Z(i) + Y(i)
+    else
+        Z(i-N) = Z(i-N) + Y(i)
+    end
+end
+
+%17    11    20     8    24
+subplot(3,1,1)
+stem(X1)
+xlabel('n -->')
+ylabel('xn -->')
+title('X1')
+
+subplot(3,1,2)
+stem(X2)
+xlabel('n -->')
+ylabel('xn -->')
+title('X2')
+
+subplot(3,1,3)
+stem(Y)
+xlabel('n -->')
+ylabel('xn -->')
+title('x1*x2')
+
+CIRCULAR CONVOLUTION USING DFT-IDFT 
+x = input('Enter first sequence: ');
+h = input('Enter second sequence: ');
+
+% Calculate the lengths of the input sequences
+N = length(x);
+M = length(h);
+
+% Calculate the circular convolution result using DFT and IDFT
+L = max(N, M);
+X = fft(x, L);
+H = fft(h, L);
+Y = X .* H;
+circular_conv = ifft(Y);
+
+disp('Linear Convolution:');
+disp(circular_conv);
+
+subplot(3,1,1)
+stem(x1)
+xlabel('time-->');
+ylabel('amplitude(x1[n])-->');
+title('first sequence(102115186)');
+
+subplot(3,1,2);
+stem(x2)
+xlabel('time-->');
+ylabel('amplitude(x2[n])-->');
+title('second sequence(102115186)');
+
+subplot(3,1,3);
+stem( circular_conv);
+title('Circular Convolution(102115186)');
+xlabel('n');
+ylabel('y[n]');
+
+5TH EXP
+clc
+clear all
+m=25;
+t=0:1:m-1;
+a=ones(1,m);
+subplot(2,2,1)
+ stem(t,a,'g');
+xlabel('<-----------n------->')
+ylabel('<----amplitude---->')
+title('Rectangular window with m=25 (102115193)')
+[h,w]=freqz(a,1,1024);
+wn=w./(2*pi);
+hn=abs(h)./max(abs(h));
+subplot(2,2,2)
+plot(wn,20.*log10(hn),'b')
+grid
+xlabel('<-----------Normalized frequency------->')
+ylabel('<----normalized magnitude response (db)---->')
+title('frequency response of rectangular window function (102115193)')
+hold on
+m=49;
+t=0:1:m-1;
+ah=ones(1,m);
+[h,w]=freqz(ah,1,1024);
+wn=w./(2*pi);
+hn=abs(h)./max(abs(h));
+plot(wn,20.*log10(hn),'r')
+hold off
+legend('m=25','m=49');
+
+m=25;
+t=0:1:m-1;
+ah=0.54-0.46.*cos((2.*pi.*t)./(m-1));
+subplot(2,2,3)
+stem(t,ah,'r');
+xlabel('<-----------n------->')
+ylabel('<----amplitude---->')
+title('hamming window with m=25 (102115193)')
+[h,w]=freqz(ah,1,1024);
+wn=w./(2*pi);
+hn=abs(h)./max(abs(h));
+subplot(2,2,4)
+plot(wn,20.*log10(hn),'b')
+grid
+xlabel('<-----------Normalized frequency------->')
+ylabel('<----normalized magnitude response (db)---->')
+title('frequency response of hamming window function (102115193)')
+hold on
+clear
+m=49;
+t=0:1:m-1;
+ah=0.54-0.46.*cos((2.*pi.*t)./(m-1));
+[h,w]=freqz(ah,1,1024);
+wn=w./(2*pi);
+hn=abs(h)./max(abs(h));
+plot(wn,20.*log10(hn),'r')
+hold off
+legend('m=25','m=49');
+
+m=25;
+t=0:1:m-1;
+ah=(0.5)*(1-cos((2.*pi.*t)./(m-1)));
+subplot(2,2,1)
+stem(t,ah,'r');
+xlabel('<-----------n------->')
+ylabel('<----amplitude---->')
+title('hanning window with m=25 (102115193)')
+[h,w]=freqz(ah,1,1024);
+wn=w./(2*pi);
+hn=abs(h)./max(abs(h));
+subplot(2,2,2)
+plot(wn,20.*log10(hn),'b')
+grid
+xlabel('<-----------Normalized frequency------->')
+ylabel('<----normalized magnitude response (db)---->')
+title('frequency response of hanning window function (102115193)')
+hold on
+clear
+m=49;
+t=0:1:m-1;
+ah=(0.5)*(1-cos((2.*pi.*t)./(m-1)));
+[h,w]=freqz(ah,1,1024);
+wn=w./(2*pi);
+hn=abs(h)./max(abs(h));
+plot(wn,20.*log10(hn),'r')
+hold off
+legend('m=25','m=49');
+
+
+m=25;
+t=0:1:m-1;
+ah= 0.42-(0.5)*(cos((2.*pi.*t)./(m-1))) + (0.08)*(cos((4.*pi.*t)./(m-1)));
+subplot(2,2,3)
+stem(t,ah,'r');
+xlabel('<-----------n------->')
+ylabel('<----amplitude---->')
+title('blackman window with m=25 (102115193)')
+[h,w]=freqz(ah,1,1024);
+wn=w./(2*pi);
+hn=abs(h)./max(abs(h));
+subplot(2,2,4)
+plot(wn,20.*log10(hn),'b')
+grid
+xlabel('<-----------Normalized frequency------->')
+ylabel('<----normalized magnitude response (db)---->')
+title('frequency response of blackman window function (102115193)')
+hold on
+clear
+m=49;
+t=0:1:m-1;
+ah=0.42-(0.5)*(cos((2.*pi.*t)./(m-1))) + (0.08)*(cos((4.*pi.*t)./(m-1)));
+[h,w]=freqz(ah,1,1024);
+wn=w./(2*pi);
+hn=abs(h)./max(abs(h));
+plot(wn,20.*log10(hn),'r')
+hold off
+legend('m=25','m=49');
+
